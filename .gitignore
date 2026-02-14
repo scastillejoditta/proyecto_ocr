@@ -1,0 +1,35 @@
+# Ambientes virtuales
+venv/
+env/
+.venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Outputs del proyecto
+output/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# EasyOCR
+.EasyOCR/
+
+# Logs
+*.log
+EOF
+

@@ -17,12 +17,31 @@ SINGLE_PAGE_DIR = TEST_DATA_DIR / 'single_page'
 BOOK_IMAGES_DIR = TEST_DATA_DIR / 'book_images'
 OUTPUT_DIR = PROJECT_ROOT / 'output'
 
+def ask_book_type():
+    """Preguntar al usuario el tipo de libro"""
+    print("\n¿Qué tipo de imagen o libro vas a procesar?")
+    print("1. Libro moderno (impreso reciente, buen estado)")
+    print("2. Libro antiguo (deteriorado, manchas, papel amarillento)")
+    
+    while True:
+        choice = input("\nSelecciona una opción (1 o 2): ").strip()
+        
+        if choice == '1':
+            return 'modern'
+        elif choice == '2':
+            return 'ancient'
+        else:
+            print("❌ Opción inválida. Por favor ingresa 1 o 2.")
 
 def test_single_image():
     """Probar con una sola imagen"""
     print("\n" + "="*60)
     print("PRUEBA: Procesando una sola imagen")
     print("="*60)
+    
+    # Preguntar tipo de libro
+    book_type = ask_book_type()
+    print(f"✓ Tipo seleccionado: {book_type}")
     
     # Verificar que existe la carpeta
     if not SINGLE_PAGE_DIR.exists():
@@ -52,11 +71,11 @@ def test_single_image():
         print(f"❌ El archivo no existe: {image_path}")
         return None
     
-    # Crear pipeline
+    # Crear pipeline según el tipo de libro
     print("\nInicializando pipeline OCR...")
     pipeline = BookOCRPipeline(
         languages=['es', 'en'],
-        book_type='modern',
+        book_type=book_type,
         use_gpu=False,
         log_level=logging.INFO
     )
