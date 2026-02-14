@@ -9,16 +9,12 @@ Sistema de reconocimiento óptico de caracteres (OCR) diseñado para procesar p�
 - [Instalación](#instalación)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Uso](#uso)
-  - [Procesamiento de una sola página](#procesamiento-de-una-sola-página)
-  - [Procesamiento de libro completo](#procesamiento-de-libro-completo)
   - [Script de inferencia](#script-de-inferencia)
 - [Configuración](#configuración)
 - [Preprocesamiento de Imágenes](#preprocesamiento-de-imágenes)
 - [Salidas Generadas](#salidas-generadas)
-- [Ejemplos](#ejemplos)
 - [Solución de Problemas](#solución-de-problemas)
-- [Contribuir](#contribuir)
-- [Licencia](#licencia)
+- [Autores](#autores)
 
 ## ✨ Características
 
@@ -53,7 +49,7 @@ Sistema de reconocimiento óptico de caracteres (OCR) diseñado para procesar p�
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/proyecto_ocr.git
+git clone https://github.com/scastillejoditta/proyecto_ocr.git
 cd proyecto_ocr
 ```
 
@@ -122,58 +118,6 @@ proyecto_ocr/
 
 ## 🚀 Uso
 
-### Procesamiento de una sola página
-
-```python
-from src.ocr_pipeline import BookOCRPipeline
-
-# Crear instancia del pipeline
-pipeline = BookOCRPipeline(
-    languages=['es', 'en'],     # Idiomas a reconocer
-    book_type='modern',         # 'modern' o 'ancient'
-    use_gpu=False,              # True si tienes GPU con CUDA
-    log_level=logging.INFO      # Nivel de detalle en logs
-)
-
-# Procesar una imagen
-result = pipeline.extract_text_from_image(
-    image_path='test_data/single_page/page_001.jpg',
-    preprocess=True,                    # Aplicar preprocesamiento
-    save_preprocessed=True,             # Guardar imagen procesada
-    output_dir='output/single_test'
-)
-
-# Ver resultados
-print(f"Texto extraído:\n{result['text']}")
-print(f"Confianza: {result['metrics']['average_confidence']:.2%}")
-print(f"Palabras detectadas: {result['metrics']['word_count']}")
-```
-
-### Procesamiento de libro completo
-
-```python
-from src.ocr_pipeline import BookOCRPipeline
-
-# Crear pipeline
-pipeline = BookOCRPipeline(
-    languages=['es'],
-    book_type='modern',
-    use_gpu=False
-)
-
-# Procesar todas las páginas de un libro
-results = pipeline.process_book(
-    images_dir='test_data/book_images',
-    output_dir='output/book_test',
-    save_preprocessed=True
-)
-
-# Ver resumen
-print(f"Páginas procesadas: {results['book_info']['successful_pages']}")
-print(f"Total de palabras: {results['statistics']['total_words']}")
-print(f"Confianza promedio: {results['statistics']['average_confidence']:.2%}")
-```
-
 ### Script de inferencia
 
 El proyecto incluye un script interactivo para pruebas rápidas:
@@ -186,10 +130,15 @@ source venv/Scripts/activate  # Git Bash
 # Ejecutar script de inferencia
 python src/inferencia.py
 
-# Seguir el menú interactivo:
+# Elegir una opción:
 # 1. Probar con una sola imagen
 # 2. Probar con libro completo
 # 3. Mostrar estructura del proyecto
+
+# Elegir el tipo de libro al que pertenecen las imágenes, corresponde al hiperparámetro book_type:
+# 1. Libro moderno (impreso reciente, buen estado)
+# 2. Libro antiguo (deteriorado, manchas, papel amarillento)
+
 ```
 
 ## ⚙️ Configuración
@@ -199,7 +148,7 @@ python src/inferencia.py
 | Parámetro | Descripción | Valores | Default |
 |-----------|-------------|---------|---------|
 | `languages` | Idiomas para OCR | Lista: `['es', 'en', 'fr', ...]` | `['es', 'en']` |
-| `book_type` | Tipo de libro | `'modern'` o `'ancient'` | `'modern'` |
+| `book_type` | Tipo de libro | `'modern'` o `'ancient'` | Lo ingresa el usuario |
 | `use_gpu` | Usar GPU para aceleración | `True` o `False` | `False` |
 | `log_level` | Nivel de logging | `logging.DEBUG`, `INFO`, `WARNING` | `logging.INFO` |
 
@@ -303,91 +252,17 @@ output/book_test/
 }
 ```
 
-## 💡 Ejemplos
-
-### Ejemplo 1: Procesar capítulo de libro moderno
-
-```python
-from src.ocr_pipeline import BookOCRPipeline
-import logging
-
-pipeline = BookOCRPipeline(
-    languages=['es'],
-    book_type='modern',
-    use_gpu=False,
-    log_level=logging.INFO
-)
-
-results = pipeline.process_book(
-    images_dir='test_data/capitulo_01',
-    output_dir='output/capitulo_01_ocr',
-    save_preprocessed=False  # No guardar preprocesadas para ahorrar espacio
-)
-
-# Exportar solo el texto
-with open('capitulo_01.txt', 'w', encoding='utf-8') as f:
-    f.write(results['full_text'])
-```
-
-### Ejemplo 2: Libro antiguo con baja calidad
-
-```python
-pipeline = BookOCRPipeline(
-    languages=['es'],
-    book_type='ancient',  # Preprocesamiento agresivo
-    use_gpu=False,
-    log_level=logging.DEBUG  # Ver detalles del proceso
-)
-
-result = pipeline.extract_text_from_image(
-    image_path='libro_1800/page_045.jpg',
-    preprocess=True,
-    save_preprocessed=True,  # Guardar para verificar calidad
-    output_dir='output/debug'
-)
-
-# Revisar confianza
-if result['metrics']['average_confidence'] < 0.7:
-    print("⚠️ Confianza baja, revisar imagen preprocesada")
-```
-
-### Ejemplo 3: Comparar configuraciones
-
-```python
-from src.ocr_pipeline import BookOCRPipeline
-
-image = 'test_data/single_page/test.jpg'
-
-# Probar configuración moderna
-pipeline_modern = BookOCRPipeline(book_type='modern')
-result_modern = pipeline_modern.extract_text_from_image(
-    image, 
-    save_preprocessed=True,
-    output_dir='output/comparison/modern'
-)
-
-# Probar configuración antigua
-pipeline_ancient = BookOCRPipeline(book_type='ancient')
-result_ancient = pipeline_ancient.extract_text_from_image(
-    image,
-    save_preprocessed=True, 
-    output_dir='output/comparison/ancient'
-)
-
-# Comparar resultados
-print(f"Modern - Palabras: {result_modern['metrics']['word_count']}, "
-      f"Confianza: {result_modern['metrics']['average_confidence']:.2%}")
-print(f"Ancient - Palabras: {result_ancient['metrics']['word_count']}, "
-      f"Confianza: {result_ancient['metrics']['average_confidence']:.2%}")
-```
-
 ## 🐛 Solución de Problemas
 
 ### Error: "No se pudo leer la imagen"
 
-**Causa**: Ruta incorrecta o archivo corrupto
+**Causa**: Ruta incorrecta, archivo corrupto o con caracteres especiales en su nombre.
 
 **Solución**:
+1. Cambiar el nombre del archivo y volver a correr inferencia.py
+
+2. Si el error persiste, revisar el archivo:
+
 ```python
 from pathlib import Path
 import cv2
@@ -446,31 +321,11 @@ pip show easyocr
 - Los modelos se guardan en `~/.EasyOCR/`
 - Ejecuciones posteriores serán mucho más rápidas
 
-## 🤝 Contribuir
-
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -m 'Añadir nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
-
 ## 👥 Autores
 
-- **Sara Castillejo** - *Desarrollo inicial* - [tu-usuario](https://github.com/scastillejoditta)
-- **Stefany Mojica** - *Desarrollo inicial* - [tu-usuario](https://github.com/stefymojica)
-- **Alexander Pineda** - *Desarrollo inicial* - [tu-usuario](https://github.com/tu-usuario)
-
-## 🙏 Agradecimientos
-
-- [EasyOCR](https://github.com/JaidedAI/EasyOCR) - Framework de OCR
-- [OpenCV](https://opencv.org/) - Procesamiento de imágenes
-- Comunidad de Python por las excelentes librerías
+- **Sara Castillejo** - *Desarrollo inicial* - [scastillejoditta](https://github.com/scastillejoditta)
+- **Stefany Mojica** - *Desarrollo inicial* - [stefymojica](https://github.com/stefymojica)
+- **Alexander Pineda** - *Desarrollo inicial* - [alexpineda](https://github.com/tu-usuario)
 
 ## 📧 Contacto
 
@@ -479,4 +334,4 @@ Para preguntas o sugerencias, contactar a: scastillejo@urosario.edu.co
 ---
 
 **Proyecto desarrollado como parte de ML Aplicado - MACC 2026** proyecto_ocr
-sistema de Reconocimiento Óptico de Caracteres (OCR) capaz de ex- traer texto desde imágenes de páginas de libros.
+Sistema de Reconocimiento Óptico de Caracteres (OCR) capaz de ex- traer texto desde imágenes de páginas de libros.
