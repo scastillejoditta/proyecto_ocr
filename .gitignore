@@ -17,6 +17,9 @@ build/
 # Outputs del proyecto
 output/
 
+# Datos de prueba 
+test_data/
+
 # IDEs
 .vscode/
 .idea/
