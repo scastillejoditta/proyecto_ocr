@@ -69,3 +69,11 @@ Procesando: image.png
 CAPÍTULO PRIMERO
 Llegué a Liverpool el 18 marzo de 1867...
 ```
+
+## 6. Soluciones Alternativas
+Existe una implementación alternativa utilizando **EasyOCR** en la rama `easyocr`.
+
+Para consultar esta solución:
+```bash
+git checkout easyocr
+```
