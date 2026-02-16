@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proyecto_ocr"
+version = "0.1.0"
+description = "OCR pipeline using PaddleOCR"
+requires-python = ">=3.9"
+dependencies = [
+    "paddleocr",
+    "paddlepaddle",
+    "opencv-python",
+]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pyre]
+source_directories = ["src"]
